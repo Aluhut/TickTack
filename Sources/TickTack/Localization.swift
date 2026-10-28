@@ -97,7 +97,71 @@ struct Localization {
         "Export fehlgeschlagen": "Export failed",
         "Position;Bereich;Tätigkeit;Konkreter Umfang;Bearbeitungszeitraum;Aufwand (h)": "Position;Category;Task;Description;Date range;Hours",
         "Erstes Projekt anlegen": "Create your first project",
-        "Datei → Neues Projekt …": "File → New project…"
+        "Datei → Neues Projekt …": "File → New project…",
+        "Unbekannte TickTack-Dateiversion.": "Unknown TickTack document version.",
+        "Die Datei enthält ungültige Projekte oder Zeiten.": "The file contains invalid projects or times.",
+        "Spalte %d": "Column %d",
+        "Tätigkeit fehlt": "Missing task",
+        "Ungültige Stunden": "Invalid hours",
+        "Ungültige Anführungszeichen in der Tabelle.": "Invalid quotation marks in the table.",
+        "Die Tabelle ist zu groß.": "The table is too large.",
+        "Eine Textzelle ist nicht vollständig geschlossen.": "A quoted text cell is not closed.",
+        "Bitte die Tabelle als UTF-8-CSV oder Excel-Datei speichern.": "Please save the table as UTF-8 CSV or an Excel file.",
+        "Beschädigte Excel-Datei.": "Damaged Excel file.",
+        "Beschädigte oder zu große Excel-Datei.": "Damaged or oversized Excel file.",
+        "Die Excel-Datei enthält zu viele Bestandteile.": "The Excel file contains too many parts.",
+        "Verschlüsselte oder zu große Excel-Dateien werden nicht unterstützt.": "Encrypted or oversized Excel files are not supported.",
+        "Nicht unterstütztes XML in der Excel-Datei.": "Unsupported XML in the Excel file.",
+        "Beschädigtes XML in der Excel-Datei.": "Damaged XML in the Excel file.",
+        "Unvollständige Excel-Datei.": "Incomplete Excel file.",
+        "Tabelle": "Worksheet",
+        "Keine lesbare Tabelle gefunden.": "No readable worksheet found.",
+        "Nur gespeicherte Einträge; ohne laufende Messung.": "Saved entries only; excludes the current timer.",
+        "Einträge": "Entries",
+        "Übersicht": "Overview",
+        "PDF konnte nicht erstellt werden.": "Could not create the PDF.",
+        "Zeitnachweis": "Time report",
+        "Seite %d / %d": "Page %d / %d",
+        "Projektdatei (.ticktack) …": "Project file (.ticktack)…",
+        "Alle Projekte sichern …": "Save all projects…",
+        "CSV-Tabelle …": "CSV table…",
+        "Excel-Tabelle (.xlsx) …": "Excel table (.xlsx)…",
+        "PDF-Zeitnachweis …": "PDF time report…",
+        "Die Datei ist zu groß (maximal 30 MB).": "The file is too large (maximum 30 MB).",
+        "Bitte eine TickTack-, CSV-, TSV- oder XLSX-Datei auswählen.": "Please select a TickTack, CSV, TSV, or XLSX file.",
+        "Die Tabelle ist leer.": "The table is empty.",
+        "Datei importieren": "Import file",
+        " (Import)": " (import)",
+        "Datei konnte nicht verarbeitet werden": "Could not process the file",
+        "Import prüfen": "Review import",
+        "Die Projekte werden als neue Kopien hinzugefügt. Vorhandene Daten bleiben erhalten.": "Projects will be added as new copies. Existing data is kept.",
+        "%d Projekte · %d Einträge": "%d projects · %d entries",
+        "Zeile": "Row",
+        "Prüfung": "Check",
+        "Bereit": "Ready",
+        "%d gültig · %d fehlerhaft": "%d valid · %d invalid",
+        "Gesamt: %@ h": "Total: %@ h",
+        "Vorschau: erste 500 Zeilen. Importiert werden alle gültigen Zeilen.": "Preview: first 500 rows. All valid rows will be imported.",
+        "Fehlerhafte Zeilen ausdrücklich überspringen": "Explicitly skip invalid rows",
+        "Es wird nichts überschrieben.": "Nothing will be overwritten.",
+        "Importieren": "Import",
+        "Trennzeichen": "Delimiter",
+        "Semikolon": "Semicolon",
+        "Komma": "Comma",
+        "Tabulator": "Tab",
+        "Erste Zeile enthält Überschriften": "First row contains headers",
+        "Dezimalzeichen": "Decimal separator",
+        "Komma (1,5)": "Comma (1,5)",
+        "Punkt (1.5)": "Dot (1.5)",
+        "Stunden als Dezimalzahl, ohne Tausendertrennzeichen.": "Decimal hours, without thousands separators.",
+        "Nicht zuordnen": "Do not map",
+        "Ziel": "Destination",
+        "Importieren …": "Import…",
+        "Exportieren": "Export",
+        "Ungültige TickTack-Datei.": "Invalid TickTack file.",
+        "Notizen": "Notes",
+        "Mehr Spalten als Überschriften": "More columns than headers",
+        "Excel unterstützt höchstens 32.767 Zeichen je Zelle. Bitte eine TickTack-Datei verwenden.": "Excel supports at most 32,767 characters per cell. Please use a TickTack file."
     ]
 }
 
@@ -119,6 +183,9 @@ enum AppLanguage {
         formatter.isLenient = false
         guard let date = formatter.date(from: value), formatter.string(from: date) == value else { return nil }
         return date
+    }
+    static func transferHours(_ hours: Double) -> String {
+        String(format: "%.10f", locale: locale, hours)
     }
     static func csvHours(_ hours: Double) -> String {
         String(format: "%.2f", locale: locale, hours)

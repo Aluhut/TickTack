@@ -12,6 +12,10 @@ Open `Package.swift` in Xcode for editing. `swift run` launches the executable w
 
 - `Models.swift`: Codable entry/project data, sort choices, date parsing.
 - `Tracker.swift`: timer, project storage, search-independent ordering, CSV, and restorable deletion.
+- `Transfer.swift`: versioned project documents, CSV/TSV parsing, mapping and validation.
+- `Spreadsheet.swift`: bounded ZIP reader/writer and the supported SpreadsheetML subset; uses system zlib and Foundation XMLParser.
+- `Report.swift`: paginated AppKit/CoreGraphics PDF reports.
+- `TransferUI.swift`: file panels, import preview, destination selection and export commands.
 - `Localization.swift`: German/English strings and deterministic language selection.
 - `Views.swift`: sidebar, table, inspector, timer controls, menu bar popover.
 - `TickTackApp.swift`: window, application menu commands, dialogs.
@@ -46,9 +50,9 @@ ARCH=x86_64 ./scripts/package.sh
 
 Run `swift test` as an additional check when full Xcode is installed. The standalone runner executes the same behavior checks under default, German, and French-with-German-fallback language preferences.
 
-Both architecture targets can be compiled on a Mac with the corresponding SDK libraries. Runtime validation needs matching hardware or Rosetta. Tests cover language selection, date parsing, project-scoped persistence, timer pauses, sorting, CSV escaping, deletion, and restoration after restart.
+Both architecture targets can be compiled on a Mac with the corresponding SDK libraries. Runtime validation needs matching hardware or Rosetta. Tests cover language selection, date parsing, project-scoped persistence, timer pauses, sorting, CSV escaping, deletion, and restoration after restart. Transfer checks cover lossless native documents, CSV escaping and precision, invalid rows, a separately generated deflated/shared-string XLSX fixture with sparse cells and dates, Excel round trips, long-note PDF pagination, and append-only imports.
 
-The package script creates `dist/TickTack-0.9.0-macOS-<architecture>.zip` and a checksum. Set `VERSION` to change the version. `SIGN_IDENTITY` optionally selects a Developer ID identity. Ad-hoc signing is the default and does not constitute notarization. A public notarized release requires the maintainer's Apple Developer credentials and Apple's notary/stapling workflow; no credentials belong in this repository.
+The package script creates `dist/TickTack-0.10.0-macOS-<architecture>.zip` and a checksum. Set `VERSION` to change the version. `SIGN_IDENTITY` optionally selects a Developer ID identity. Ad-hoc signing is the default and does not constitute notarization. A public notarized release requires the maintainer's Apple Developer credentials and Apple's notary/stapling workflow; no credentials belong in this repository.
 
 The GitHub Actions workflow runs tests and packages a build on a macOS runner. It uses read-only repository permissions. Add ZIPs and checksums to a tagged GitHub Release after reviewing them. Do not publish `.build`, `build`, test stores, screenshots of real projects, or local preference files.
 
@@ -56,4 +60,8 @@ The GitHub Actions workflow runs tests and packages a build on a macOS runner. I
 
 The public bundle identifier is `app.ticktack.desktop`. Storage keys include `TickTack.projects`, `TickTack.entries.v1`, `TickTack.deletedItems`, active project, font size, and sort order. The optional bundle metadata key `TickTackLegacyEntriesKey` allows a locally maintained build to migrate an older entry key inside the same preferences domain. Public bundles omit that setting and contain no personal data. Existing records with no project ID are assigned to the first stored project during migration.
 
-Current limitations: in-memory active timer/drafts, no sync or backup import, and no secure erasure of deletion history. CSV is a project report rather than a complete backup format.
+Project documents use `format: "TickTack"` and `version: 1`, retain saved record IDs, dates, seconds and project accents on export, and validate relationships and finite nonnegative durations on import. Imported documents receive new IDs and append as project copies. The `.ticktack` file type is registered with Finder; opening a file presents a preview. Native dates retain the existing Codable representation for exact round trips.
+
+The ZIP reader does not extract paths or execute external tools. It accepts stored/deflated members, verifies CRCs and size bounds, and rejects encryption and XML entities/DTDs. Worksheet relationships are resolved inside `xl/`; external relationships are ignored. Spreadsheet text is written as inline strings, never formulas. Readers do not calculate formulas; only cached values are read.
+
+Current limitations: in-memory active timer/drafts, no sync or automatic backups, and no secure erasure of deletion history. Manual project exports include saved projects/entries only. CSV, Excel and PDF are reports rather than complete application backups.

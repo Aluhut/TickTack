@@ -7,6 +7,6 @@ let package = Package(
     products: [.executable(name: "TickTack", targets: ["TickTack"])],
     targets: [
         .executableTarget(name: "TickTack"),
-        .testTarget(name: "TickTackTests", dependencies: ["TickTack"])
+        .testTarget(name: "TickTackTests", dependencies: ["TickTack"], exclude: ["Fixtures"])
     ]
 )

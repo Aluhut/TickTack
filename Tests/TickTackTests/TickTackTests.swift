@@ -141,7 +141,7 @@ final class TickTackTests: XCTestCase {
 
 #if SMOKE_TEST
 @main struct TestRunner {
-    static func main() async {
+    static func main() async throws {
         if let index = CommandLine.arguments.firstIndex(of: "-AppleLanguages"), CommandLine.arguments.indices.contains(index + 1) {
             let requested = CommandLine.arguments[index + 1]
             XCTAssertEqual(AppLanguage.localization.isGerman, requested == "(de)")
@@ -153,7 +153,14 @@ final class TickTackTests: XCTestCase {
         await tests.testProjectScopedDeletionRestoreAndEmptyRestart()
         await tests.testSortingExportAndEditingAreProjectScoped()
         await tests.testFreshInstallHasNoPersonalOrExampleData()
-        print("6 behavior checks passed")
+        let transfer = TransferTests()
+        try transfer.testDocumentRoundTripAndValidation()
+        try transfer.testCSVVariantsAndInvalidRows()
+        try transfer.testExcelInteroperabilityAndRoundTrip()
+        try transfer.testPDFPaginationAndLongNotes()
+        try await transfer.testImportsKeepExistingProjectsAndCSVPrecision()
+        try await transfer.testTableImportRequiresExplicitSkippingAndAppends()
+        print("12 behavior checks passed")
     }
 }
 #endif

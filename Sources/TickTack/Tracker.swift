@@ -1,7 +1,14 @@
 import SwiftUI
 import AppKit
+import UniformTypeIdentifiers
 
 @MainActor final class Tracker: NSObject, ObservableObject {
+    @Published var importSession: ImportSession?
+    @Published var showFileImporter = false
+    @Published var showFileExporter = false
+    @Published var exportDocument: TransferFile?
+    var exportContentType = UTType.data
+    var exportName = "TickTack"
     @Published var projects: [TimeProject] = []
     @Published var activeProjectID = "" {
         didSet { selection.removeAll(); showDraft = false; search = ""; defaults.set(activeProjectID, forKey: "TickTack.activeProject") }
@@ -218,16 +225,8 @@ import AppKit
     func csvText() -> String {
         func quote(_ value: String) -> String { "\"" + value.replacingOccurrences(of: "\"", with: "\"\"") + "\"" }
         let rows = orderedEntries.enumerated().map { index, entry in
-            [quote(entry.position ?? String(index + 1)), quote(entry.category), quote(entry.task), quote(entry.scope), quote(entry.period), quote(AppLanguage.csvHours(entry.seconds / 3600))].joined(separator: ";")
+            [quote(entry.position ?? String(index + 1)), quote(entry.category), quote(entry.task), quote(entry.scope), quote(entry.period), quote(AppLanguage.transferHours(entry.seconds / 3600))].joined(separator: ";")
         }
         return "\u{FEFF}" + L("Position;Bereich;Tätigkeit;Konkreter Umfang;Bearbeitungszeitraum;Aufwand (h)") + "\n" + rows.joined(separator: "\n")
     }
-    func export() {
-        let panel = NSSavePanel(); panel.nameFieldStringValue = activeProjectName.replacingOccurrences(of: "/", with: "-") + L("-Zeiten.csv")
-        guard panel.runModal() == .OK, let url = panel.url else { return }
-        let csv = csvText()
-        do { try csv.write(to: url, atomically: true, encoding: .utf8) }
-        catch { let alert = NSAlert(); alert.messageText = L("Export fehlgeschlagen"); alert.informativeText = error.localizedDescription; alert.runModal() }
-    }
 }
-

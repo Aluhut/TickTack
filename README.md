@@ -31,7 +31,7 @@ Keep the main list compact and open the inspector when you need the full story. 
 
 ### A place for every project.
 
-Choose a name and an accent color. Each project has its own entries, total, and CSV export. Search your notes, change the sort order, or remove several entries together. Deleted entries and projects can be restored, even after restarting.
+Choose a name and an accent color. Each project has its own entries, total, and export. Search your notes, change the sort order, or remove several entries together. Deleted entries and projects can be restored, even after restarting.
 
 ![TickTack's new-project dialog with the fictional Paper & Pixel project and a purple accent selected](docs/screenshots/new-project-dark.jpg)
 <p align="center"><sub>Six accent colors, readable text, and familiar Mac controls.</sub></p>
@@ -41,15 +41,15 @@ Choose a name and an accent color. Each project has its own entries, total, and 
 - **Readable by default.** A 17-point base font, generous rows, and text sizes adjustable from 16 to 24 points.
 - **Two languages.** German when the primary system language is German; English for every other language. Your own text stays as you wrote it.
 - **Your preferred order.** Sort by date, task, category, or hours; your choice is remembered.
-- **A useful handoff.** Export a project's saved entries as CSV for Numbers, Excel, or a project report.
+- **A useful handoff.** Import CSV and Excel tables; export styled Excel workbooks, CSV, or PDF time reports. Save projects and their colors in lossless TickTack files.
 - **Local storage.** Projects, saved entries, preferences, and restorable deletions stay on your Mac. No analytics or remote service is included.
 
 ## Get TickTack
 
 Requires **macOS 14 (Sonoma) or later**.
 
-- **[Download for Apple silicon — M1 and later](https://github.com/Aluhut/TickTack/releases/download/v0.9.0/TickTack-0.9.0-macOS-arm64.zip)**
-- **[Download for Intel Macs](https://github.com/Aluhut/TickTack/releases/download/v0.9.0/TickTack-0.9.0-macOS-x86_64.zip)**
+- **[Download for Apple silicon — M1 and later](https://github.com/Aluhut/TickTack/releases/download/v0.10.0/TickTack-0.10.0-macOS-arm64.zip)**
+- **[Download for Intel Macs](https://github.com/Aluhut/TickTack/releases/download/v0.10.0/TickTack-0.10.0-macOS-x86_64.zip)**
 
 Extract the ZIP, drag **TickTack.app** to **Applications**, and open it from there. Checksums are available on the [release page](https://github.com/Aluhut/TickTack/releases/latest).
 
@@ -67,7 +67,7 @@ For work you have already done, enter decimal hours and choose **Add entry**. Fo
 
 **Save an active measurement before quitting or updating.** Running timers and unfinished drafts are held in memory; crash recovery is not implemented. The menu bar's Quit button saves an active measurement first, but standard Quit or a crash can lose it.
 
-There is no cloud sync, automatic backup, or backup import. CSV contains saved entries only, not the running timer or complete application state. New installations start empty; the projects shown above are demonstration data. Read the [privacy notes](docs/PRIVACY.md).
+There is no cloud sync or automatic backup. Manual TickTack files preserve saved projects and entries and can be imported as new copies. Exported files exclude running timers, drafts, preferences, and deletion history. New installations start empty; the projects shown above are demonstration data. Read the [privacy notes](docs/PRIVACY.md).
 
 ## Build it yourself
 

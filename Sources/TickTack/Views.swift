@@ -1,10 +1,6 @@
 import SwiftUI
 import AppKit
 
-func duration(_ seconds: Double) -> String {
-    let s = Int(seconds)
-    return String(format: "%02d:%02d:%02d", s / 3600, (s % 3600) / 60, s % 60)
-}
 
 struct TimerControl: View {
     let symbol: String
@@ -206,7 +202,7 @@ struct MainView: View {
                             TableColumn(L("Stunden")) { (entry: Entry) in
                                 TextField(L("Stunden"), value: tracker.hoursBinding(entry), format: .number.precision(.fractionLength(0...4))).textFieldStyle(.plain).monospacedDigit().padding(.vertical, 8)
                             }.width(75)
-                        }.overlay {
+                        }.alternatingRowBackgrounds(.enabled).overlay {
                             if visibleEntries.isEmpty {
                                 ContentUnavailableView(tracker.search.isEmpty ? L("Noch keine Einträge") : L("Keine Treffer"), systemImage: "clock", description: Text(tracker.search.isEmpty ? L("Lege einen Eintrag an oder starte die Stoppuhr.") : L("Versuche einen anderen Suchbegriff.")))
                             }
@@ -226,7 +222,7 @@ struct MainView: View {
             }.frame(minWidth: 760, minHeight: 580)
             .navigationTitle("TickTack")
             .toolbar {
-                Button(action: tracker.export) { Label(L("CSV exportieren"), systemImage: "square.and.arrow.up") }.disabled(tracker.projectEntries.isEmpty)
+                Menu { ExportOptions(tracker: tracker) } label: { Label(L("Exportieren"), systemImage: "square.and.arrow.up") }
             }
             .onChange(of: tracker.selection) { _, selection in
                 if !selection.isEmpty { tracker.showDraft = false }
@@ -258,3 +254,31 @@ struct MenuView: View {
     }
 }
 
+
+struct NewProjectSheet: View {
+    @ObservedObject var tracker: Tracker
+    var body: some View {
+                    VStack(alignment: .leading, spacing: 18) {
+                        Text(L("Neues Projekt")).font(.title2.bold())
+                        TextField(L("Projektname"), text: $tracker.newProjectName).textFieldStyle(.roundedBorder).onSubmit { tracker.createProject() }
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text(L("Akzentfarbe")).font(.subheadline)
+                            HStack(spacing: 12) {
+                                ForEach(ProjectAccent.allCases) { accent in
+                                    Button { tracker.newProjectAccent = accent } label: {
+                                        Circle().fill(accent.color).frame(width: 36, height: 36)
+                                            .overlay { if tracker.newProjectAccent == accent { Image(systemName: "checkmark").font(.system(size: 16, weight: .bold)).foregroundStyle(.white) } }
+                                            .padding(3).overlay(Circle().stroke(tracker.newProjectAccent == accent ? accent.color : .clear, lineWidth: 2))
+                                    }.buttonStyle(.plain).help(accent.title).accessibilityLabel(accent.title).accessibilityAddTraits(tracker.newProjectAccent == accent ? .isSelected : [])
+                                }
+                            }
+                        }
+                        HStack {
+                            Spacer()
+                            Button(L("Abbrechen")) { tracker.showNewProject = false }.keyboardShortcut(.cancelAction)
+                            Button(L("Projekt erstellen"), action: tracker.createProject).buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
+                                .disabled(tracker.newProjectName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        }
+                    }.padding(26).frame(width: 380)
+    }
+}

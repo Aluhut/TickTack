@@ -71,3 +71,9 @@ struct DeletedItems: Codable {
     var entries: [Entry]
 }
 
+
+func duration(_ seconds: Double) -> String {
+    let s = Int(seconds)
+    return String(format: "%02d:%02d:%02d", s / 3600, (s % 3600) / 60, s % 60)
+}
+

@@ -16,7 +16,7 @@ In der Tabelle bleibt alles übersichtlich. Ein Klick auf eine Zeile öffnet rec
 
 ### Jedes Projekt bekommt seinen Platz
 
-Wähle einen Namen und eine von sechs Akzentfarben. Jedes Projekt hat eigene Einträge, eine eigene Gesamtzeit und einen eigenen CSV-Export. Du kannst suchen, anders sortieren und mehrere Einträge gleichzeitig löschen. Gelöschte Daten lassen sich wiederherstellen.
+Wähle einen Namen und eine von sechs Akzentfarben. Jedes Projekt hat eigene Einträge, eine eigene Gesamtzeit und eigene Exportmöglichkeiten. Du kannst suchen, anders sortieren und mehrere Einträge gleichzeitig löschen. Gelöschte Daten lassen sich wiederherstellen.
 
 ![Neues Projekt mit frei gewähltem Namen und violetter Akzentfarbe](screenshots/new-project-dark.jpg)
 
@@ -24,14 +24,16 @@ Wähle einen Namen und eine von sechs Akzentfarben. Jedes Projekt hat eigene Ein
 
 Die Grundschrift startet bei 17 Punkten. Im Menü **Darstellung** kannst du sie zwischen 16 und 24 Punkten anpassen. Höhere Zeilen und beschriftete Knöpfe erleichtern die Bedienung. Ist die erste bevorzugte Systemsprache Deutsch, erscheint TickTack auf Deutsch; für jede andere Systemsprache wird Englisch verwendet. Eigene Texte werden nicht übersetzt.
 
+Im Menü **Ablage → Importieren …** kannst du TickTack-Dateien sowie CSV- und Excel-Tabellen mit Vorschau übernehmen. **Ablage → Exportieren** bietet Projektdateien, CSV, gestaltete Excel-Tabellen und PDF-Zeitnachweise. Excel und PDF behalten abwechselnde Zeilenfarben. Mit **Alle Projekte sichern …** speicherst du Projekte samt Einträgen und Farben in einer Datei. Beim Import werden vorhandene Daten nicht überschrieben.
+
 Deine Daten bleiben auf deinem Mac. Es gibt keine Konten, Werbung oder Nutzungsanalyse.
 
 ## Installieren
 
 Voraussetzung: **macOS 14 (Sonoma) oder neuer**.
 
-- **[Apple Silicon — M1 und neuer](https://github.com/Aluhut/TickTack/releases/download/v0.9.0/TickTack-0.9.0-macOS-arm64.zip)**
-- **[Intel-Macs](https://github.com/Aluhut/TickTack/releases/download/v0.9.0/TickTack-0.9.0-macOS-x86_64.zip)**
+- **[Apple Silicon — M1 und neuer](https://github.com/Aluhut/TickTack/releases/download/v0.10.0/TickTack-0.10.0-macOS-arm64.zip)**
+- **[Intel-Macs](https://github.com/Aluhut/TickTack/releases/download/v0.10.0/TickTack-0.10.0-macOS-x86_64.zip)**
 
 ZIP entpacken, **TickTack.app** nach **Programme** ziehen und dort öffnen. Die Downloads sind nicht von Apple notarisiert. Wird der erste Start blockiert, hilft die [Schritt-für-Schritt-Anleitung zu Gatekeeper](FIRST_LAUNCH.md#deutsch).
 
@@ -47,7 +49,7 @@ Für manuelle Einträge Dezimalstunden verwenden: **1,5 Stunden = 90 Minuten**. 
 
 **Laufende Messungen vor dem Beenden oder Aktualisieren sichern.** Aktive Timer und Entwürfe werden nach einem Absturz bisher nicht wiederhergestellt. Der Menüleisten-Befehl „Beenden“ sichert die aktuelle Messung; normales Beenden kann ungesicherte Zeit verlieren.
 
-Es gibt keine Cloud-Synchronisierung, automatischen Backups oder vollständigen Backup-Import. CSV enthält gespeicherte Einträge des ausgewählten Projekts. Neue Installationen starten ohne Beispieldaten.
+Es gibt keine Cloud-Synchronisierung oder automatischen Backups. TickTack-Dateien lassen sich manuell sichern und als neue Projektkopien importieren. Laufende Messungen, Entwürfe, Einstellungen und Löschverlauf gehören nicht zum Dateiexport. CSV, Excel und PDF enthalten gespeicherte Einträge des ausgewählten Projekts. Neue Installationen starten ohne Beispieldaten.
 
 ## Selbst bauen und mitmachen
 

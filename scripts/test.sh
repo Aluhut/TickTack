@@ -6,7 +6,8 @@ mkdir -p build/ModuleCache
 /usr/bin/xcrun swiftc -D SMOKE_TEST -parse-as-library \
     -module-cache-path build/ModuleCache \
     Sources/TickTack/Models.swift Sources/TickTack/Tracker.swift Sources/TickTack/Localization.swift \
-    Tests/TickTackTests/TickTackTests.swift \
+    Sources/TickTack/Transfer.swift Sources/TickTack/Spreadsheet.swift Sources/TickTack/Report.swift Sources/TickTack/TransferUI.swift \
+    Tests/TickTackTests/*.swift \
     -framework SwiftUI -framework AppKit -o build/TickTackChecks
 ./build/TickTackChecks
 ./build/TickTackChecks -AppleLanguages '(de)'

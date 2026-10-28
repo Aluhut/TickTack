@@ -1,11 +1,25 @@
 import SwiftUI
 import AppKit
+import UniformTypeIdentifiers
 
 @main struct TickTackApp: App {
     @StateObject private var tracker = Tracker()
+    @Environment(\.openWindow) private var openWindow
     var body: some Scene {
-        WindowGroup("TickTack", id: "main") {
+        Window("TickTack", id: "main") {
             MainView(tracker: tracker)
+                .onOpenURL { tracker.loadImport(url: $0) }
+                .fileExporter(isPresented: $tracker.showFileExporter, document: tracker.exportDocument,
+                              contentType: tracker.exportContentType, defaultFilename: tracker.exportName) { result in
+                    if case .failure(let error) = result { tracker.transferAlert(error) }
+                }
+                .fileImporter(isPresented: $tracker.showFileImporter,
+                              allowedContentTypes: [.ticktackProject] + ["json", "csv", "tsv", "txt", "xlsx"].compactMap { UTType(filenameExtension: $0) }) { result in
+                    switch result {
+                    case .success(let url): DispatchQueue.main.async { tracker.loadImport(url: url) }
+                    case .failure(let error): tracker.transferAlert(error)
+                    }
+                }
                 .environment(\.locale, AppLanguage.locale)
                 .font(.system(size: tracker.interfaceFontSize))
                 .controlSize(.large)
@@ -23,30 +37,10 @@ import AppKit
                 } message: {
                     Text(L("%d ausgewählte Einträge werden entfernt. Unter Datei/Ablage kannst du sie wiederherstellen.", tracker.selection.count))
                 }
-                .sheet(isPresented: $tracker.showNewProject) {
-                    VStack(alignment: .leading, spacing: 18) {
-                        Text(L("Neues Projekt")).font(.title2.bold())
-                        TextField(L("Projektname"), text: $tracker.newProjectName).textFieldStyle(.roundedBorder).onSubmit { tracker.createProject() }
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text(L("Akzentfarbe")).font(.subheadline)
-                            HStack(spacing: 12) {
-                                ForEach(ProjectAccent.allCases) { accent in
-                                    Button { tracker.newProjectAccent = accent } label: {
-                                        Circle().fill(accent.color).frame(width: 36, height: 36)
-                                            .overlay { if tracker.newProjectAccent == accent { Image(systemName: "checkmark").font(.system(size: 16, weight: .bold)).foregroundStyle(.white) } }
-                                            .padding(3).overlay(Circle().stroke(tracker.newProjectAccent == accent ? accent.color : .clear, lineWidth: 2))
-                                    }.buttonStyle(.plain).help(accent.title).accessibilityLabel(accent.title).accessibilityAddTraits(tracker.newProjectAccent == accent ? .isSelected : [])
-                                }
-                            }
-                        }
-                        HStack {
-                            Spacer()
-                            Button(L("Abbrechen")) { tracker.showNewProject = false }.keyboardShortcut(.cancelAction)
-                            Button(L("Projekt erstellen"), action: tracker.createProject).buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
-                                .disabled(tracker.newProjectName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                        }
-                    }.padding(26).frame(width: 380)
+                .sheet(item: $tracker.importSession) { session in
+                    ImportPreview(tracker: tracker, session: session)
                 }
+                .sheet(isPresented: $tracker.showNewProject) { NewProjectSheet(tracker: tracker) }
         }.defaultSize(width: 1400, height: 900)
         .commands {
             CommandGroup(after: .toolbar) {
@@ -60,6 +54,9 @@ import AppKit
                 Button(L("Projekt löschen …")) { tracker.confirmProjectDeletion = true }.disabled(!tracker.canDeleteProject)
                 Button(L("Ausgewählte Einträge löschen …")) { tracker.confirmEntryDeletion = true }.disabled(tracker.selection.isEmpty)
                 Button(L("Zuletzt Gelöschtes wiederherstellen"), action: tracker.restoreLastDeletion).disabled(tracker.deletedItems.isEmpty)
+                Divider()
+                Button(L("Importieren …")) { openWindow(id: "main"); tracker.beginImport() }.keyboardShortcut("i", modifiers: [.command, .shift])
+                Menu(L("Exportieren")) { ExportOptions(tracker: tracker) }
                 Divider()
                 Menu(L("Projektfarbe")) {
                     ForEach(ProjectAccent.allCases) { accent in
