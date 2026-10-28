@@ -28,7 +28,7 @@ Download a ready-to-use app from [Releases](https://github.com/Aluhut/TickTack/r
 - [Apple silicon (M1 and later)](https://github.com/Aluhut/TickTack/releases/download/v0.9.0/TickTack-0.9.0-macOS-arm64.zip)
 - [Intel Mac](https://github.com/Aluhut/TickTack/releases/download/v0.9.0/TickTack-0.9.0-macOS-x86_64.zip)
 
-Extract the ZIP and drag **TickTack.app** to **Applications**. These builds are ad-hoc signed and not notarized; see the security note below.
+Extract the ZIP and drag **TickTack.app** to **Applications**. These builds are ad-hoc signed and not notarized. **Blocked on first launch? Follow the [step-by-step Gatekeeper guide](docs/FIRST_LAUNCH.md#english).**
 
 ### Build from source
 

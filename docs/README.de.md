@@ -17,7 +17,7 @@ open build/TickTack.app
 
 Die fertige App aus `build/` nach „Programme“ ziehen. Bei Bedarf lassen sich die Apple Command Line Tools mit `xcode-select --install` installieren. Die App läuft auf Apple-Silicon- und Intel-Macs; das Bauskript verwendet standardmäßig die Architektur des eigenen Macs.
 
-Heruntergeladene, nicht notarisierte Builds können eine ausdrückliche Freigabe durch macOS verlangen. Bitte Apples Hinweise beachten; Sicherheitseinstellungen müssen nicht abgeschaltet werden.
+**Beim ersten Start blockiert?** Die [Schritt-für-Schritt-Anleitung zu Gatekeeper](FIRST_LAUNCH.md#deutsch) zeigt dir, wie du TickTack gezielt freigibst.
 
 ## Bedienung
 

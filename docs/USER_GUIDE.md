@@ -1,5 +1,7 @@
 # User guide
 
+If macOS blocks the first launch, follow the [Gatekeeper guide](FIRST_LAUNCH.md#english). [Deutsche Anleitung](FIRST_LAUNCH.md#deutsch).
+
 ## Projects and colors
 
 Create a project from File → New project… (⌘N). Select it in the left sidebar. File → Project color changes its accent. Project names are user data and remain exactly as entered.
