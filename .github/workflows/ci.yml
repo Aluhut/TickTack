@@ -1,0 +1,25 @@
+name: Build and test
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Behavior checks
+        run: ./scripts/test.sh
+      - name: XCTest
+        run: swift test
+      - name: Build application
+        run: ./scripts/package.sh
+      - name: Upload application
+        uses: actions/upload-artifact@v4
+        with:
+          name: TickTack-macOS
+          path: |
+            dist/*.zip
+            dist/*.sha256
