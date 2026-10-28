@@ -1,42 +1,64 @@
-# TickTack
+<p align="center"><img src="../Assets/AppIcon.png" width="96" alt="TickTack — eine Uhr mit verblassender Spur"></p>
+<h1 align="center">TickTack</h1>
+<p align="center"><strong>Ein klarer Blick auf deine Zeit.</strong><br>Native Zeiterfassung für deinen Mac — ohne Konto und ohne Abo.</p>
+<p align="center"><a href="https://github.com/Aluhut/TickTack/releases/latest">TickTack herunterladen</a> · <a href="../README.md">English</a> · <a href="FIRST_LAUNCH.md#deutsch">Hilfe beim ersten Start</a></p>
 
-Native Zeiterfassung für macOS ab Version 14: Projekte anlegen, Zeiten messen und alle Einträge übersichtlich bearbeiten. Ohne Konto und ohne Internetverbindung.
+![TickTack im dunklen Modus mit dem erfundenen Projekt Studio North, seinen Einträgen und der aktuellen Gesamtzeit](screenshots/overview-dark.jpg)
+<p align="center"><sub>Alle abgebildeten Projekte und Einträge sind frei erfundene Beispieldaten. Die Screenshots zeigen die englische Oberfläche.</sub></p>
 
-[English documentation](../README.md)
+## Die Zeit im Blick. Den Kopf bei der Arbeit.
+
+Starte eine Messung und arbeite weiter. Die großen Knöpfe für Start, Pause und Stopp findest du auch im Menüleistenfenster. Die Gesamtzeit zählt deine laufende Messung sofort mit.
+
+In der Tabelle bleibt alles übersichtlich. Ein Klick auf eine Zeile öffnet rechts die vollständigen Angaben: Tätigkeit, Bereich, Notizen, Zeitraum und Stunden. Änderungen werden automatisch gespeichert. Bereits erledigte Arbeit kannst du auch manuell eintragen.
+
+![Bearbeitung eines erfundenen Eintrags im hellen Modus](screenshots/entry-details-light.jpg)
+
+### Jedes Projekt bekommt seinen Platz
+
+Wähle einen Namen und eine von sechs Akzentfarben. Jedes Projekt hat eigene Einträge, eine eigene Gesamtzeit und einen eigenen CSV-Export. Du kannst suchen, anders sortieren und mehrere Einträge gleichzeitig löschen. Gelöschte Daten lassen sich wiederherstellen.
+
+![Neues Projekt mit frei gewähltem Namen und violetter Akzentfarbe](screenshots/new-project-dark.jpg)
+
+### Gut lesbar und ganz lokal
+
+Die Grundschrift startet bei 17 Punkten. Im Menü **Darstellung** kannst du sie zwischen 16 und 24 Punkten anpassen. Höhere Zeilen und beschriftete Knöpfe erleichtern die Bedienung. Ist die erste bevorzugte Systemsprache Deutsch, erscheint TickTack auf Deutsch; für jede andere Systemsprache wird Englisch verwendet. Eigene Texte werden nicht übersetzt.
+
+Deine Daten bleiben auf deinem Mac. Es gibt keine Konten, Werbung oder Nutzungsanalyse.
 
 ## Installieren
 
-Die fertige App unter [Releases](https://github.com/Aluhut/TickTack/releases/latest) herunterladen: Apple Silicon für M1 und neuer, Intel für ältere Intel-Macs. ZIP entpacken und **TickTack.app** nach **Programme** ziehen.
+Voraussetzung: **macOS 14 (Sonoma) oder neuer**.
 
-Zum Selbstbauen das Repository über „Code → Download ZIP“ herunterladen und entpacken. Mit installierten Apple Command Line Tools im Projektordner ausführen:
+- **[Apple Silicon — M1 und neuer](https://github.com/Aluhut/TickTack/releases/download/v0.9.0/TickTack-0.9.0-macOS-arm64.zip)**
+- **[Intel-Macs](https://github.com/Aluhut/TickTack/releases/download/v0.9.0/TickTack-0.9.0-macOS-x86_64.zip)**
+
+ZIP entpacken, **TickTack.app** nach **Programme** ziehen und dort öffnen. Die Downloads sind nicht von Apple notarisiert. Wird der erste Start blockiert, hilft die [Schritt-für-Schritt-Anleitung zu Gatekeeper](FIRST_LAUNCH.md#deutsch).
+
+## Dein erster Eintrag
+
+1. **Ablage → Neues Projekt …** (⌘N): Namen und Farbe wählen.
+2. **Neuer Eintrag**: Tätigkeit, Bereich und Notizen ergänzen.
+3. **Start**, bei Bedarf **Pause**, abschließend **Stopp & sichern**.
+
+Für manuelle Einträge Dezimalstunden verwenden: **1,5 Stunden = 90 Minuten**. Mit ⌘ mehrere einzelne Zeilen, mit ⇧ einen zusammenhängenden Bereich auswählen. Der Papierkorb entfernt die Auswahl nach einer Bestätigung. Im Ablage-Menü kannst du Projekte löschen und Löschvorgänge wiederherstellen.
+
+## Noch wichtig
+
+**Laufende Messungen vor dem Beenden oder Aktualisieren sichern.** Aktive Timer und Entwürfe werden nach einem Absturz bisher nicht wiederhergestellt. Der Menüleisten-Befehl „Beenden“ sichert die aktuelle Messung; normales Beenden kann ungesicherte Zeit verlieren.
+
+Es gibt keine Cloud-Synchronisierung, automatischen Backups oder vollständigen Backup-Import. CSV enthält gespeicherte Einträge des ausgewählten Projekts. Neue Installationen starten ohne Beispieldaten.
+
+## Selbst bauen und mitmachen
+
+Mit installierten Apple Command Line Tools im Projektordner ausführen:
 
 ```sh
+./scripts/test.sh
 ./scripts/build.sh
 open build/TickTack.app
 ```
 
-Die fertige App aus `build/` nach „Programme“ ziehen. Bei Bedarf lassen sich die Apple Command Line Tools mit `xcode-select --install` installieren. Die App läuft auf Apple-Silicon- und Intel-Macs; das Bauskript verwendet standardmäßig die Architektur des eigenen Macs.
+Die Werkzeuge lassen sich bei Bedarf mit `xcode-select --install` installieren. [Entwicklerdokumentation](DEVELOPMENT.md), [Bedienungsanleitung](USER_GUIDE.md) und [Hinweise zum Mitmachen](../CONTRIBUTING.md) findest du im Repository.
 
-**Beim ersten Start blockiert?** Die [Schritt-für-Schritt-Anleitung zu Gatekeeper](FIRST_LAUNCH.md#deutsch) zeigt dir, wie du TickTack gezielt freigibst.
-
-## Bedienung
-
-- **Ablage → Neues Projekt …** (⌘N): Name und eine von sechs Akzentfarben wählen.
-- **Neuer Eintrag**: Tätigkeit, Bereich und Notizen ergänzen. „Start“, „Pause“, „Fortsetzen“ und „Stopp & sichern“ steuern die Messung.
-- Manuelle Zeiten in Dezimalstunden eingeben: **1,5 Stunden = 90 Minuten**.
-- Eine Tabellenzeile auswählen, um rechts alle Details zu bearbeiten. Änderungen werden automatisch gespeichert.
-- Mit ⌘ mehrere einzelne Zeilen, mit ⇧ einen zusammenhängenden Bereich auswählen. Über den Papierkorb oder das Ablage-Menü löschen.
-- **Ablage → Projekt löschen …** entfernt das ausgewählte Projekt samt Einträgen. Eine zugehörige Messung vorher stoppen.
-- **Ablage → Zuletzt Gelöschtes wiederherstellen** nimmt Löschvorgänge schrittweise zurück, auch nach einem Neustart.
-- Die große Gesamtzeit zählt die laufende Messung mit. Der CSV-Export enthält nur gespeicherte Einträge des ausgewählten Projekts.
-- Die Schriftgröße im Menü **Darstellung** anpassen. Die Einstellung bleibt gespeichert.
-
-## Sprache und Daten
-
-Ist die erste bevorzugte Systemsprache Deutsch, erscheint TickTack auf Deutsch. Für jede andere Systemsprache wird Englisch verwendet. Eigene Projektnamen, Tätigkeiten und Notizen werden nicht übersetzt. Neue Datumsangaben verwenden das eindeutige Format `JJJJ-MM-TT`.
-
-Daten bleiben lokal in den macOS-App-Einstellungen. Es gibt keine Cloud-Synchronisierung und keinen vollständigen Backup-Import. Laufende Messungen und Entwürfe vor dem Beenden sichern; sie werden nach einem Absturz bisher nicht wiederhergestellt.
-
-## Lizenz
-
-Quellcode, Dokumentation und das eigene App-Logo stehen unter der [MIT-Lizenz](../LICENSE). Hinweise zu Apple-Systemkomponenten stehen in [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).
+Quellcode, Dokumentation, das eigene App-Logo und diese Screenshots stehen unter der **[MIT-Lizenz](../LICENSE)**. Apple-Systemkomponenten behalten ihre eigenen Lizenzbedingungen: [Hinweise zu Drittanbietern](../THIRD_PARTY_NOTICES.md).
