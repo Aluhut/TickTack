@@ -75,7 +75,7 @@ struct EntryInspector: View {
                     DetailField(title: L("Tätigkeit"), text: tracker.textBinding(entry, \.task), multiline: true)
                     DetailField(title: L("Bereich"), text: tracker.textBinding(entry, \.category))
                     DetailField(title: L("Konkreter Umfang / Notizen"), text: tracker.textBinding(entry, \.scope), multiline: true)
-                    DetailField(title: L("Bearbeitungszeitraum"), text: tracker.textBinding(entry, \.period))
+                    DetailField(title: L("Bearbeitungszeitraum"), text: tracker.periodBinding(entry))
                     VStack(alignment: .leading, spacing: 6) {
                         Text(L("Aufwand in Stunden")).font(.system(size: 14)).foregroundStyle(Color.primary.opacity(0.78))
                         TextField(L("Stunden"), value: tracker.hoursBinding(entry), format: .number.precision(.fractionLength(0...4))).textFieldStyle(.roundedBorder)
@@ -89,7 +89,7 @@ struct EntryInspector: View {
                         Label(tracker.paused ? L("Messung pausiert") : L("Messung läuft"), systemImage: "clock").foregroundStyle(.teal)
                         Text(L("Mit Stopp & sichern wird dieser Eintrag übernommen. Du kannst den Text jederzeit ergänzen.")).font(.system(size: 14)).foregroundStyle(Color.primary.opacity(0.78))
                     } else {
-                        DetailField(title: L("Bearbeitungszeitraum"), text: $tracker.draftPeriod)
+                        DetailField(title: L("Bearbeitungszeitraum"), text: tracker.draftPeriodBinding)
                         VStack(alignment: .leading, spacing: 6) {
                             Text(L("Stunden für manuellen Eintrag")).font(.system(size: 14)).foregroundStyle(Color.primary.opacity(0.78))
                             TextField(L("Stunden"), value: $tracker.manualHours, format: .number.precision(.fractionLength(0...4))).textFieldStyle(.roundedBorder)
@@ -108,7 +108,7 @@ struct MainView: View {
     @ObservedObject var tracker: Tracker
     private var visibleEntries: [Entry] {
         let query = tracker.search.trimmingCharacters(in: .whitespacesAndNewlines)
-        return tracker.orderedEntries.filter { query.isEmpty || [$0.task, $0.category, $0.scope, $0.period].contains { $0.localizedCaseInsensitiveContains(query) } }
+        return tracker.orderedEntries.filter { query.isEmpty || [$0.task, $0.category, $0.scope, $0.period, tracker.displayedPeriod($0)].contains { $0.localizedCaseInsensitiveContains(query) } }
     }
     private var selectedEntry: Entry? { tracker.projectEntries.first { tracker.selection.contains($0.id) } }
     var body: some View {
@@ -147,7 +147,7 @@ struct MainView: View {
                             }
                         }.buttonStyle(.plain).help(L("Aktuelle Tätigkeit bearbeiten"))
                     }.frame(maxWidth: .infinity, alignment: .leading)
-                    Text(duration(tracker.elapsed)).font(.system(size: 30, weight: .light, design: .rounded)).monospacedDigit()
+                    Text(tracker.formats.total(tracker.elapsed)).font(.system(size: 30, weight: .light, design: .rounded)).monospacedDigit()
                     Controls(tracker: tracker, compact: true)
                 }.padding(20).background(.regularMaterial)
                 Divider()
@@ -169,10 +169,10 @@ struct MainView: View {
                                     .font(.system(size: 14)).foregroundStyle(Color.primary.opacity(0.78))
                             }
                             Spacer(minLength: 12)
-                            Text(duration(tracker.activeProjectTotal))
+                            Text(tracker.formats.total(tracker.activeProjectTotal))
                                 .font(.system(size: 38, weight: .semibold, design: .rounded)).monospacedDigit()
                                 .accessibilityLabel(L("Gesamtzeit dieses Projekts"))
-                                .accessibilityValue(duration(tracker.activeProjectTotal))
+                                .accessibilityValue(tracker.formats.total(tracker.activeProjectTotal))
                         }.padding(20)
                             .background(tracker.activeAccent.opacity(0.12), in: RoundedRectangle(cornerRadius: 14))
                             .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(tracker.activeAccent.opacity(0.4), lineWidth: 1))
@@ -197,8 +197,8 @@ struct MainView: View {
                                 TextField(L("Bereich"), text: tracker.textBinding(entry, \.category)).textFieldStyle(.plain).padding(.vertical, 8)
                             }.width(min: 110, ideal: 160)
                             TableColumn(L("Zeitraum")) { (entry: Entry) in
-                                TextField(L("Zeitraum"), text: tracker.textBinding(entry, \.period)).textFieldStyle(.plain).padding(.vertical, 8)
-                            }.width(130)
+                                TextField(L("Zeitraum"), text: tracker.periodBinding(entry)).textFieldStyle(.plain).padding(.vertical, 8)
+                            }.width(tracker.formats.showClock ? 420 : 240)
                             TableColumn(L("Stunden")) { (entry: Entry) in
                                 TextField(L("Stunden"), value: tracker.hoursBinding(entry), format: .number.precision(.fractionLength(0...4))).textFieldStyle(.plain).monospacedDigit().padding(.vertical, 8)
                             }.width(75)
@@ -238,13 +238,13 @@ struct MenuView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("TickTack").font(.headline)
             Text(L("Projekt: ") + (tracker.running ? tracker.timerProjectName : tracker.activeProjectName)).font(.subheadline).foregroundStyle(Color.primary.opacity(0.78))
-            Text(duration(tracker.elapsed)).font(.system(size: 30, design: .rounded)).monospacedDigit()
+            Text(tracker.formats.total(tracker.elapsed)).font(.system(size: 30, design: .rounded)).monospacedDigit()
             Text(tracker.paused ? L("Pausiert") : tracker.running ? tracker.task : L("Bereit zum Start")).foregroundStyle(Color.primary.opacity(0.78)).lineLimit(2)
             Controls(tracker: tracker)
             Divider()
             VStack(alignment: .leading, spacing: 5) {
                 Text(L("Gesamtzeit des Projekts")).font(.system(size: 14, weight: .medium))
-                Text(duration(tracker.currentTotal(for: tracker.running ? tracker.timerProjectIDForUI : tracker.activeProjectID)))
+                Text(tracker.formats.total(tracker.currentTotal(for: tracker.running ? tracker.timerProjectIDForUI : tracker.activeProjectID)))
                     .font(.system(size: 26, weight: .semibold, design: .rounded)).monospacedDigit()
             }
             Divider()

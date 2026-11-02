@@ -34,6 +34,7 @@ struct TransferFile: FileDocument {
 @MainActor final class ImportSession: ObservableObject, Identifiable {
     let id = UUID()
     let fileName: String
+    let importFormats: DisplayFormats
     var document: ProjectDocument?
     var sourceText: String?
     @Published var tables: [ImportTable] = [] { didSet { refreshPreview() } }
@@ -47,7 +48,8 @@ struct TransferFile: FileDocument {
     @Published var error = ""
     var table: ImportTable { tables.indices.contains(tableIndex) ? tables[tableIndex] : ImportTable(name: "", rows: []) }
 
-    init(url: URL) throws {
+    init(url: URL, formats: DisplayFormats = DisplayFormats()) throws {
+        importFormats = formats
         fileName = url.lastPathComponent; projectName = url.deletingPathExtension().lastPathComponent
         let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
         guard size <= SpreadsheetZIP.limit else { throw TransferError.invalid("Die Datei ist zu groß (maximal 30 MB).") }
@@ -62,6 +64,7 @@ struct TransferFile: FileDocument {
             try parseText()
         default: throw TransferError.invalid("Bitte eine TickTack-, CSV-, TSV- oder XLSX-Datei auswählen.")
         }
+        for index in tables.indices { tables[index].dateOrder = formats.dateOrder }
         refreshPreview()
     }
     func refreshPreview() { preview = table.preview }
@@ -69,7 +72,7 @@ struct TransferFile: FileDocument {
         guard let text = sourceText, let delimiter = separator.first else { return }
         var table = ImportTable(name: fileName, rows: try DelimitedText.parse(text, separator: delimiter))
         guard !table.rows.isEmpty else { throw TransferError.invalid("Die Tabelle ist leer.") }
-        table.suggestMapping(); tables = [table]; tableIndex = 0
+        table.suggestMapping(); table.dateOrder = importFormats.dateOrder; tables = [table]; tableIndex = 0
     }
     func reparse() {
         do { try parseText(); error = "" } catch { self.error = error.localizedDescription }
@@ -83,7 +86,7 @@ extension Tracker {
     func loadImport(url: URL) {
         let scoped = url.startAccessingSecurityScopedResource()
         defer { if scoped { url.stopAccessingSecurityScopedResource() } }
-        do { importSession = try ImportSession(url: url) }
+        do { importSession = try ImportSession(url: url, formats: formats) }
         catch { transferAlert(error) }
     }
 
@@ -138,8 +141,8 @@ extension Tracker {
             guard orderedEntries.allSatisfy({ [$0.task, $0.category, $0.scope, $0.period, $0.position ?? ""].allSatisfy { $0.utf16.count <= 32767 } }) else {
                 throw TransferError.invalid("Excel unterstützt höchstens 32.767 Zeichen je Zelle. Bitte eine TickTack-Datei verwenden.")
             }
-            return Spreadsheet.export(project: project, entries: orderedEntries)
-        case .pdf: return try TimeReport.pdf(project: project, entries: orderedEntries)
+            return Spreadsheet.export(project: project, entries: orderedEntries, formats: formats)
+        case .pdf: return try TimeReport.pdf(project: project, entries: orderedEntries, formats: formats)
         case .allProjects: preconditionFailure("Handled above")
         }
     }
@@ -195,7 +198,7 @@ struct ImportPreview: View {
                     TableColumn(L("Tätigkeit")) { row in Text(row.values[.task] ?? "—").lineLimit(2) }
                     TableColumn(L("Bereich")) { row in Text(row.values[.category] ?? "").lineLimit(2) }
                     TableColumn(L("Notizen")) { row in Text(row.values[.scope] ?? "").lineLimit(2).help(row.values[.scope] ?? "") }
-                    TableColumn(L("Zeitraum")) { row in Text(row.values[.period] ?? "").lineLimit(2) }
+                    TableColumn(L("Zeitraum")) { row in Text(row.entry.map { tracker.displayedPeriod($0) } ?? row.values[.period] ?? "").lineLimit(2) }
                     TableColumn(L("Stunden")) { row in Text(row.entry.map { AppLanguage.csvHours($0.seconds / 3600) } ?? row.values[.hours] ?? "—") }.width(85)
                     TableColumn(L("Prüfung")) { row in
                         Label(row.issue ?? L("Bereit"), systemImage: row.issue == nil ? "checkmark.circle" : "exclamationmark.triangle")
@@ -205,7 +208,7 @@ struct ImportPreview: View {
                 HStack {
                     Text(L("%d gültig · %d fehlerhaft", valid.count, invalid)).font(.headline)
                     Spacer()
-                    Text(L("Gesamt: %@ h", AppLanguage.csvHours(valid.reduce(0) { $0 + ($1.entry?.seconds ?? 0) } / 3600))).font(.headline)
+                    Text(L("Gesamt: %@", tracker.formats.total(valid.reduce(0) { $0 + ($1.entry?.seconds ?? 0) }))).font(.headline)
                 }
                 if preview.count > 500 { Text(L("Vorschau: erste 500 Zeilen. Importiert werden alle gültigen Zeilen.")).font(.subheadline) }
                 if invalid > 0 { Toggle(L("Fehlerhafte Zeilen ausdrücklich überspringen"), isOn: $session.skipInvalid) }
@@ -253,6 +256,16 @@ struct ImportPreview: View {
                     }.labelsHidden().frame(width: 180)
                     Text(L("Stunden als Dezimalzahl, ohne Tausendertrennzeichen.")).font(.subheadline).foregroundStyle(.secondary)
                 }
+                HStack {
+                    Picker(L("Datumsformat der Datei"), selection: $session.tables[session.tableIndex].dateOrder) {
+                        ForEach(DateOrder.allCases) { Text($0.title).tag($0) }
+                    }
+                    Picker(L("Dauer in der Datei"), selection: $session.tables[session.tableIndex].durationStyle) {
+                        ForEach(DurationStyle.allCases) { Text($0.title).tag($0) }
+                    }
+                }
+                Text(L("ISO-Daten und deutsche Punktdaten werden ebenfalls erkannt. Uhrzeiten dürfen 24 Stunden oder AM/PM verwenden."))
+                    .font(.subheadline).foregroundStyle(.secondary)
                 Grid(alignment: .leading, horizontalSpacing: 18, verticalSpacing: 8) {
                     ForEach(0..<2) { group in
                         GridRow {

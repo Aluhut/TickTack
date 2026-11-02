@@ -7,7 +7,7 @@ enum TimeReport {
         var alternate: Bool
         var height: CGFloat { CGFloat(lines.map(\.count).max() ?? 1) * 16 + 16 }
     }
-    static func pdf(project: TimeProject, entries: [Entry]) throws -> Data {
+    static func pdf(project: TimeProject, entries: [Entry], formats: DisplayFormats? = nil) throws -> Data {
         let widths: [CGFloat] = [48, 88, 150, 244, 160, 88]
         let font = NSFont.systemFont(ofSize: 11.5)
         func wrapped(_ value: String, width: CGFloat) -> [String] {
@@ -25,7 +25,7 @@ enum TimeReport {
         }
         var pages: [[Row]] = [[]], used: CGFloat = 0
         for (index, entry) in entries.enumerated() {
-            let values = [entry.position ?? String(index + 1), entry.category, entry.task, entry.scope, entry.period, AppLanguage.csvHours(entry.seconds / 3600)]
+            let values = [entry.position ?? String(index + 1), entry.category, entry.task, entry.scope, formats?.period(entry.period, source: DateOrder(rawValue: entry.periodDateOrder ?? "") ?? .german) ?? entry.period, (formats?.exportStyle ?? .decimal).text(entry.seconds)]
             let lines = zip(values, widths).map { wrapped($0.0, width: $0.1) }
             let lineCount = lines.map(\.count).max() ?? 1
             var offset = 0
@@ -47,7 +47,7 @@ enum TimeReport {
         func text(_ value: String, _ rect: CGRect, size: CGFloat = 11.5, bold: Bool = false, color: NSColor = .black) {
             (value as NSString).draw(in: rect, withAttributes: [.font: bold ? NSFont.boldSystemFont(ofSize: size) : NSFont.systemFont(ofSize: size), .foregroundColor: color])
         }
-        let headers = [L("Position"), L("Bereich"), L("Tätigkeit"), L("Konkreter Umfang / Notizen"), L("Zeitraum"), L("Stunden")]
+        let headers = [L("Position"), L("Bereich"), L("Tätigkeit"), L("Konkreter Umfang / Notizen"), L("Zeitraum"), formats?.exportStyle == .clock ? L("Dauer") : L("Stunden")]
         for (pageIndex, page) in pages.enumerated() {
             context.beginPDFPage(nil)
             context.saveGState(); context.translateBy(x: 0, y: 595); context.scaleBy(x: 1, y: -1)
@@ -56,7 +56,7 @@ enum TimeReport {
             text("TickTack · " + L("Zeitnachweis"), CGRect(x: 32, y: 24, width: 500, height: 28), size: 20, bold: true, color: ink)
             text(project.name, CGRect(x: 32, y: 60, width: 525, height: 48), size: 17, bold: true, color: ink)
             text(L("Gesamtzeit dieses Projekts"), CGRect(x: 585, y: 24, width: 225, height: 20), size: 12, color: ink)
-            text(duration(entries.reduce(0) { $0 + $1.seconds }), CGRect(x: 585, y: 48, width: 225, height: 36), size: 26, bold: true, color: ink)
+            text(formats?.total(entries.reduce(0) { $0 + $1.seconds }) ?? duration(entries.reduce(0) { $0 + $1.seconds }), CGRect(x: 585, y: 48, width: 225, height: 36), size: 26, bold: true, color: ink)
             text(L("%d gespeicherte Einträge", entries.count), CGRect(x: 585, y: 88, width: 225, height: 20), size: 11, color: ink)
             ink.setFill(); CGRect(x: 32, y: 120, width: 778, height: 30).fill()
             var x: CGFloat = 32

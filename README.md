@@ -40,6 +40,7 @@ Choose a name and an accent color. Each project has its own entries, total, and 
 
 - **Readable by default.** A 17-point base font, generous rows, and text sizes adjustable from 16 to 24 points.
 - **Two languages.** German when the primary system language is German; English for every other language. Your own text stays as you wrote it.
+- **Dates your way.** Settings offers four date orders, optional 12/24-hour times, and duration choices for totals and exports. Existing records retain their original values; imports have explicit source-format controls.
 - **Your preferred order.** Sort by date, task, category, or hours; your choice is remembered.
 - **A useful handoff.** Import CSV and Excel tables; export styled Excel workbooks, CSV, or PDF time reports. Save projects and their colors in lossless TickTack files.
 - **Local storage.** Projects, saved entries, preferences, and restorable deletions stay on your Mac. No analytics or remote service is included.
@@ -48,8 +49,8 @@ Choose a name and an accent color. Each project has its own entries, total, and 
 
 Requires **macOS 14 (Sonoma) or later**.
 
-- **[Download for Apple silicon — M1 and later](https://github.com/Aluhut/TickTack/releases/download/v0.10.0/TickTack-0.10.0-macOS-arm64.zip)**
-- **[Download for Intel Macs](https://github.com/Aluhut/TickTack/releases/download/v0.10.0/TickTack-0.10.0-macOS-x86_64.zip)**
+- **[Download for Apple silicon — M1 and later](https://github.com/Aluhut/TickTack/releases/download/v0.10.1/TickTack-0.10.1-macOS-arm64.zip)**
+- **[Download for Intel Macs](https://github.com/Aluhut/TickTack/releases/download/v0.10.1/TickTack-0.10.1-macOS-x86_64.zip)**
 
 Extract the ZIP, drag **TickTack.app** to **Applications**, and open it from there. Checksums are available on the [release page](https://github.com/Aluhut/TickTack/releases/latest).
 

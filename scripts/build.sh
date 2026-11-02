@@ -6,7 +6,7 @@ BUILD_DIR="$PROJECT_DIR/build"
 APP="$BUILD_DIR/TickTack.app"
 mkdir -p "$BUILD_DIR/ModuleCache" "$APP/Contents/MacOS" "$APP/Contents/Resources"
 ARCH="${ARCH:-$(uname -m)}"
-VERSION="${VERSION:-0.10.0}"
+VERSION="${VERSION:-0.10.1}"
 /usr/bin/xcrun swiftc -O -parse-as-library \
     -target "$ARCH-apple-macos14.0" \
     -module-cache-path "$BUILD_DIR/ModuleCache" \

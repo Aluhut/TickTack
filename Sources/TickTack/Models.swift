@@ -11,6 +11,7 @@ struct Entry: Identifiable, Codable {
     var scope: String = ""
     var period: String = ""
     var seconds: Double
+    var periodDateOrder: String? = nil
 }
 
 struct TimeProject: Identifiable, Codable, Hashable {
@@ -50,19 +51,8 @@ enum EntrySort: String, CaseIterable, Identifiable {
 
 extension Entry {
     var chronologicalDate: Date? {
-        let isoExpression = try! NSRegularExpression(pattern: #"\d{4}-\d{2}-\d{2}"#)
-        let source = period as NSString
-        if let match = isoExpression.matches(in: period, range: NSRange(location: 0, length: source.length)).last,
-           let date = AppLanguage.parseISODate(source.substring(with: match.range)) { return date }
-        let expression = try! NSRegularExpression(pattern: #"(\d{1,2})\.(\d{1,2})\.(\d{4})"#)
-        let text = period as NSString
-        guard let match = expression.matches(in: period, range: NSRange(location: 0, length: text.length)).last else {
-            return date.timeIntervalSinceReferenceDate == 0 ? nil : date
-        }
-        let components = DateComponents(year: Int(text.substring(with: match.range(at: 3))), month: Int(text.substring(with: match.range(at: 2))), day: Int(text.substring(with: match.range(at: 1))))
-        let calendar = Calendar(identifier: .gregorian)
-        guard let parsed = calendar.date(from: components), calendar.dateComponents([.year, .month, .day], from: parsed) == components else { return nil }
-        return parsed
+        if let parsed = ParsedPeriod.parse(period, source: DateOrder(rawValue: periodDateOrder ?? "") ?? .german) { return parsed.parts.last?.date }
+        return date.timeIntervalSinceReferenceDate == 0 ? nil : date
     }
 }
 

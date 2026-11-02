@@ -168,7 +168,7 @@ enum Spreadsheet {
         return tables
     }
 
-    static func export(project: TimeProject, entries: [Entry]) -> Data {
+    static func export(project: TimeProject, entries: [Entry], formats: DisplayFormats? = nil) -> Data {
         func escape(_ text: String) -> String {
             String(String.UnicodeScalarView(text.unicodeScalars.filter { $0.value >= 32 || [9, 10, 13].contains($0.value) }))
                 .replacingOccurrences(of: "&", with: "&amp;").replacingOccurrences(of: "<", with: "&lt;")
@@ -177,23 +177,26 @@ enum Spreadsheet {
         func cell(_ ref: String, _ text: String, _ style: Int) -> String {
             "<c r=\"\(ref)\" s=\"\(style)\" t=\"inlineStr\"><is><t xml:space=\"preserve\">\(escape(text))</t></is></c>"
         }
-        let headers = L("Position;Bereich;Tätigkeit;Konkreter Umfang;Bearbeitungszeitraum;Aufwand (h)").components(separatedBy: ";")
+        var headers = L("Position;Bereich;Tätigkeit;Konkreter Umfang;Bearbeitungszeitraum;Aufwand (h)").components(separatedBy: ";")
+        if formats?.exportStyle == .clock { headers[5] = L("Dauer (h:mm:ss)") }
         var rows = "<row r=\"1\" ht=\"30\" customHeight=\"1\">" + headers.enumerated().map { cell("\(String(UnicodeScalar(65 + $0.offset)!))1", $0.element, 1) }.joined() + "</row>"
         for (index, entry) in entries.enumerated() {
             let r = index + 2, style = index % 2 == 0 ? 2 : 3
-            let values = [entry.position ?? String(index + 1), entry.category, entry.task, entry.scope, entry.period]
+            let values = [entry.position ?? String(index + 1), entry.category, entry.task, entry.scope, formats?.period(entry.period, source: DateOrder(rawValue: entry.periodDateOrder ?? "") ?? .german) ?? entry.period]
             let characterWidths = [7, 19, 35, 57, 25]
             let lineCount = zip(values, characterWidths).map { value, width in
                 value.components(separatedBy: "\n").reduce(0) { $0 + max(1, Int(ceil(Double($1.count) / Double(width)))) }
             }.max() ?? 1
             let height = min(409, max(36, lineCount * 17 + 12))
             rows += "<row r=\"\(r)\" ht=\"\(height)\" customHeight=\"1\">" + values.enumerated().map { cell("\(String(UnicodeScalar(65 + $0.offset)!))\(r)", $0.element, style) }.joined()
-            rows += "<c r=\"F\(r)\" s=\"\(style + 2)\"><v>\(entry.seconds / 3600)</v></c></row>"
+            if formats?.exportStyle == .clock { rows += cell("F\(r)", DurationStyle.clock.text(entry.seconds, precise: true), style) + "</row>" }
+            else { rows += "<c r=\"F\(r)\" s=\"\(style + 2)\"><v>\(entry.seconds / 3600)</v></c></row>" }
         }
         let ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
         let sheet = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><worksheet xmlns=\"\(ns)\"><sheetViews><sheetView workbookViewId=\"0\"><pane ySplit=\"1\" topLeftCell=\"A2\" activePane=\"bottomLeft\" state=\"frozen\"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight=\"36\"/><cols><col min=\"1\" max=\"1\" width=\"10\" customWidth=\"1\"/><col min=\"2\" max=\"2\" width=\"22\" customWidth=\"1\"/><col min=\"3\" max=\"3\" width=\"38\" customWidth=\"1\"/><col min=\"4\" max=\"4\" width=\"60\" customWidth=\"1\"/><col min=\"5\" max=\"5\" width=\"28\" customWidth=\"1\"/><col min=\"6\" max=\"6\" width=\"16\" customWidth=\"1\"/></cols><sheetData>\(rows)</sheetData><autoFilter ref=\"A1:F\(entries.count + 1)\"/></worksheet>"
         let total = entries.reduce(0) { $0 + $1.seconds } / 3600
-        let summary = "<worksheet xmlns=\"\(ns)\"><cols><col min=\"1\" max=\"2\" width=\"40\" customWidth=\"1\"/></cols><sheetData><row r=\"1\">\(cell("A1", project.name, 1))</row><row r=\"2\">\(cell("A2", L("Gesamtzeit dieses Projekts"), 2))<c r=\"B2\" s=\"4\"><v>\(total)</v></c></row><row r=\"3\">\(cell("A3", L("Stunden"), 2))</row><row r=\"4\">\(cell("A4", L("Nur gespeicherte Einträge; ohne laufende Messung."), 2))</row></sheetData></worksheet>"
+        let summaryTotal = formats?.exportStyle == .clock ? cell("B2", DurationStyle.clock.text(total * 3600, precise: true), 2) : "<c r=\"B2\" s=\"4\"><v>\(total)</v></c>"
+        let summary = "<worksheet xmlns=\"\(ns)\"><cols><col min=\"1\" max=\"2\" width=\"40\" customWidth=\"1\"/></cols><sheetData><row r=\"1\">\(cell("A1", project.name, 1))</row><row r=\"2\">\(cell("A2", L("Gesamtzeit dieses Projekts"), 2))\(summaryTotal)</row><row r=\"3\">\(cell("A3", formats?.exportStyle == .clock ? L("Dauer (h:mm:ss)") : L("Stunden"), 2))</row><row r=\"4\">\(cell("A4", L("Nur gespeicherte Einträge; ohne laufende Messung."), 2))</row></sheetData></worksheet>"
         let styles = "<styleSheet xmlns=\"\(ns)\"><numFmts count=\"1\"><numFmt numFmtId=\"164\" formatCode=\"0.0000\"/></numFmts><fonts count=\"2\"><font><sz val=\"12\"/><name val=\"Calibri\"/></font><font><b/><sz val=\"12\"/><color rgb=\"FFFFFFFF\"/><name val=\"Calibri\"/></font></fonts><fills count=\"4\"><fill><patternFill patternType=\"none\"/></fill><fill><patternFill patternType=\"gray125\"/></fill><fill><patternFill patternType=\"solid\"><fgColor rgb=\"FF163B46\"/><bgColor indexed=\"64\"/></patternFill></fill><fill><patternFill patternType=\"solid\"><fgColor rgb=\"FFEDF4F5\"/><bgColor indexed=\"64\"/></patternFill></fill></fills><borders count=\"1\"><border/></borders><cellStyleXfs count=\"1\"><xf/></cellStyleXfs><cellXfs count=\"6\"><xf/><xf fontId=\"1\" fillId=\"2\" applyFill=\"1\" applyFont=\"1\"><alignment vertical=\"center\" wrapText=\"1\"/></xf><xf><alignment vertical=\"top\" wrapText=\"1\"/></xf><xf fillId=\"3\" applyFill=\"1\"><alignment vertical=\"top\" wrapText=\"1\"/></xf><xf numFmtId=\"164\" applyNumberFormat=\"1\"><alignment vertical=\"top\"/></xf><xf numFmtId=\"164\" fillId=\"3\" applyFill=\"1\" applyNumberFormat=\"1\"><alignment vertical=\"top\"/></xf></cellXfs><cellStyles count=\"1\"><cellStyle name=\"Normal\" xfId=\"0\" builtinId=\"0\"/></cellStyles></styleSheet>"
         return SpreadsheetZIP.write([
             ("[Content_Types].xml", "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Override PartName=\"/xl/workbook.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml\"/><Override PartName=\"/xl/worksheets/sheet1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml\"/><Override PartName=\"/xl/worksheets/sheet2.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml\"/><Override PartName=\"/xl/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml\"/></Types>"),

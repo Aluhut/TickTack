@@ -160,6 +160,23 @@ struct Localization {
         "Exportieren": "Export",
         "Ungültige TickTack-Datei.": "Invalid TickTack file.",
         "Notizen": "Notes",
+        "Dezimalstunden (1,5 h)": "Decimal hours (1.5 h)",
+        "Stunden:Minuten:Sekunden (01:30:00)": "Hours:minutes:seconds (01:30:00)",
+        "Datum und Uhrzeit": "Date and time",
+        "Datumsformat": "Date format",
+        "Vorhandene Uhrzeiten beim Datum anzeigen": "Show existing times alongside dates",
+        "Uhrzeitformat": "Time format",
+        "Dauer": "Duration",
+        "Stoppuhr und Gesamtzeit": "Timer and totals",
+        "Aufwand in CSV, Excel und PDF": "Duration in CSV, Excel and PDF",
+        "Die Auswahl gilt sofort für Anzeige und Exporte. Originalangaben bleiben gespeichert. Freie Texte bleiben unverändert; beim Import kannst du das Quellformat wählen.": "Changes apply immediately to display and exports. Original values stay saved. Free text is kept; choose the source format when importing.",
+        "Dauer (h:mm:ss)": "Duration (h:mm:ss)",
+        "Datumsformat prüfen": "Check date format",
+        "Gesamt: %@": "Total: %@",
+        "Datumsformat der Datei": "File date format",
+        "Dauer in der Datei": "File duration format",
+        "ISO-Daten und deutsche Punktdaten werden ebenfalls erkannt. Uhrzeiten dürfen 24 Stunden oder AM/PM verwenden.": "ISO dates and German dotted dates are also recognized. Times may use 24 hours or AM/PM.",
+
         "Mehr Spalten als Überschriften": "More columns than headers",
         "Excel unterstützt höchstens 32.767 Zeichen je Zelle. Bitte eine TickTack-Datei verwenden.": "Excel supports at most 32,767 characters per cell. Please use a TickTack file."
     ]

@@ -160,7 +160,11 @@ final class TickTackTests: XCTestCase {
         try transfer.testPDFPaginationAndLongNotes()
         try await transfer.testImportsKeepExistingProjectsAndCSVPrecision()
         try await transfer.testTableImportRequiresExplicitSkippingAndAppends()
-        print("12 behavior checks passed")
+        let formats = FormatTests()
+        formats.testExistingDatesRangesAndTextAreDisplayedConsistently()
+        formats.testTimeAndDurationConversions()
+        try await formats.testSettingsDoNotRewriteSavedRecordsAndTransfersUseFormats()
+        print("15 behavior checks passed")
     }
 }
 #endif

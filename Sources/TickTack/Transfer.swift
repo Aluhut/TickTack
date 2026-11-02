@@ -47,7 +47,7 @@ enum ImportField: String, CaseIterable, Identifiable {
         case .task: return ["tätigkeit", "tatigkeit", "task", "activity", "aufgabe"]
         case .scope: return ["konkreterumfang", "konkreterumfangnotizen", "description", "descriptionnotes", "notes", "notizen", "beschreibung"]
         case .period: return ["bearbeitungszeitraum", "daterange", "date", "datum", "zeitraum"]
-        case .hours: return ["aufwandh", "aufwandinstunden", "hours", "hour", "stunden", "timehours"]
+        case .hours: return ["aufwandh", "aufwandinstunden", "hours", "hour", "stunden", "timehours", "dauerhmmss", "durationhmmss", "dauer", "duration"]
         }
     }
 }
@@ -65,6 +65,8 @@ struct ImportTable {
     var rowNumbers: [Int]? = nil
     var hasHeader = true
     var mapping: [ImportField: Int] = [:]
+    var dateOrder: DateOrder = .iso
+    var durationStyle: DurationStyle = .decimal
     var decimalComma = AppLanguage.localization.isGerman
     var headers: [String] {
         let count = rows.map(\.count).max() ?? 0
@@ -81,6 +83,7 @@ struct ImportTable {
         }
         if let column = mapping[.hours] {
             let examples = rows.dropFirst().compactMap { $0.indices.contains(column) ? $0[column] : nil }
+            durationStyle = examples.contains(where: { $0.contains(":") }) ? .clock : .decimal
             if examples.contains(where: { $0.contains(",") }) { decimalComma = true }
             else if examples.contains(where: { $0.contains(".") }) { decimalComma = false }
         }
@@ -114,13 +117,17 @@ struct ImportTable {
             guard !task.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                 return ImportRow(id: sourceRow, entry: nil, issue: L("Tätigkeit fehlt"), values: values)
             }
-            guard let hours = Self.hours(value(.hours), decimalComma: decimalComma) else {
+            guard let seconds = durationStyle.seconds(value(.hours), decimalComma: decimalComma) else {
                 return ImportRow(id: sourceRow, entry: nil, issue: L("Ungültige Stunden"), values: values)
             }
             let period = value(.period)
+            let parsed = ParsedPeriod.parse(period, source: dateOrder)
+            if parsed == nil, period.range(of: #"^\d{1,4}[./-]"#, options: .regularExpression) != nil {
+                return ImportRow(id: sourceRow, entry: nil, issue: L("Datumsformat prüfen"), values: values)
+            }
             let entry = Entry(position: value(.position).isEmpty ? nil : value(.position),
-                              date: AppLanguage.parseISODate(period) ?? Date(timeIntervalSinceReferenceDate: 0),
-                              task: task, category: value(.category), scope: value(.scope), period: period, seconds: hours * 3600)
+                              date: parsed?.parts.last?.date ?? Date(timeIntervalSinceReferenceDate: 0),
+                              task: task, category: value(.category), scope: value(.scope), period: parsed?.canonical ?? period, seconds: seconds, periodDateOrder: DateOrder.iso.rawValue)
             return ImportRow(id: sourceRow, entry: entry, issue: nil, values: values)
         }
     }

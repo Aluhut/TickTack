@@ -3,6 +3,10 @@ import AppKit
 import UniformTypeIdentifiers
 
 @MainActor final class Tracker: NSObject, ObservableObject {
+    @Published var formats = DisplayFormats() {
+        didSet { if let data = try? JSONEncoder().encode(formats) { defaults.set(data, forKey: "TickTack.displayFormats") } }
+    }
+    var draftDateOrder: DateOrder = .iso
     @Published var importSession: ImportSession?
     @Published var showFileImporter = false
     @Published var showFileExporter = false
@@ -80,6 +84,7 @@ import UniformTypeIdentifiers
         self.defaults = defaults
         self.now = now
         super.init()
+        if let data = defaults.data(forKey: "TickTack.displayFormats"), let saved = try? JSONDecoder().decode(DisplayFormats.self, from: data) { formats = saved }
         if defaults.data(forKey: key) == nil,
            let legacyKey = Bundle.main.object(forInfoDictionaryKey: "TickTackLegacyEntriesKey") as? String,
            let legacyData = defaults.data(forKey: legacyKey) { defaults.set(legacyData, forKey: key) }
@@ -117,7 +122,7 @@ import UniformTypeIdentifiers
     func stop() {
         guard running else { return }; tick()
         if elapsed > 0 {
-            entries.insert(Entry(projectID: timerProjectID ?? activeProjectID, date: now(), task: task.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? L("Neue Tätigkeit") : task, category: category, scope: scope, period: AppLanguage.dateString(now()), seconds: elapsed), at: 0)
+            entries.insert(Entry(projectID: timerProjectID ?? activeProjectID, date: now(), task: task.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? L("Neue Tätigkeit") : task, category: category, scope: scope, period: ParsedPeriod.formatter("yyyy-MM-dd HH:mm:ss").string(from: now()), seconds: elapsed, periodDateOrder: DateOrder.iso.rawValue), at: 0)
             save()
             selection = [entries[0].id]; showDraft = false
         }
@@ -156,12 +161,12 @@ import UniformTypeIdentifiers
     func newEntry() {
         if running { activeProjectID = timerProjectID ?? activeProjectID }
         selection.removeAll(); showDraft = true
-        if !running { task = ""; category = ""; scope = ""; manualHours = 0; draftPeriod = AppLanguage.dateString(Date()) }
+        if !running { task = ""; category = ""; scope = ""; manualHours = 0; draftPeriod = AppLanguage.dateString(now()); draftDateOrder = .iso }
     }
     func addManualEntry() {
         guard hasActiveProject, !running, !task.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               manualHours.isFinite, manualHours >= 0, manualHours <= 1000000 else { return }
-        let entry = Entry(projectID: activeProjectID, date: now(), task: task, category: category, scope: scope, period: draftPeriod, seconds: manualHours * 3600)
+        let entry = Entry(projectID: activeProjectID, date: now(), task: task, category: category, scope: scope, period: draftPeriod, seconds: manualHours * 3600, periodDateOrder: draftDateOrder.rawValue)
         entries.insert(entry, at: 0); save(); selection = [entry.id]; showDraft = false
     }
     func textBinding(_ entry: Entry, _ path: WritableKeyPath<Entry, String>) -> Binding<String> {
@@ -169,6 +174,22 @@ import UniformTypeIdentifiers
             guard let index = self.entries.firstIndex(where: { $0.id == entry.id }) else { return }
             self.entries[index][keyPath: path] = value
             self.save()
+        })
+    }
+    func displayedPeriod(_ entry: Entry) -> String {
+        formats.period(entry.period, source: DateOrder(rawValue: entry.periodDateOrder ?? "") ?? .german)
+    }
+    func periodBinding(_ entry: Entry) -> Binding<String> {
+        Binding(get: { self.entries.first { $0.id == entry.id }.map(self.displayedPeriod) ?? "" }, set: { text in
+            guard let index = self.entries.firstIndex(where: { $0.id == entry.id }) else { return }
+            self.entries[index].period = text
+            self.entries[index].periodDateOrder = self.formats.dateOrder.rawValue
+            self.save()
+        })
+    }
+    var draftPeriodBinding: Binding<String> {
+        Binding(get: { self.formats.period(self.draftPeriod, source: self.draftDateOrder) }, set: {
+            self.draftPeriod = $0; self.draftDateOrder = self.formats.dateOrder
         })
     }
     func positionBinding(_ entry: Entry) -> Binding<String> {
@@ -225,8 +246,9 @@ import UniformTypeIdentifiers
     func csvText() -> String {
         func quote(_ value: String) -> String { "\"" + value.replacingOccurrences(of: "\"", with: "\"\"") + "\"" }
         let rows = orderedEntries.enumerated().map { index, entry in
-            [quote(entry.position ?? String(index + 1)), quote(entry.category), quote(entry.task), quote(entry.scope), quote(entry.period), quote(AppLanguage.transferHours(entry.seconds / 3600))].joined(separator: ";")
+            [quote(entry.position ?? String(index + 1)), quote(entry.category), quote(entry.task), quote(entry.scope), quote(displayedPeriod(entry)), quote(formats.exportStyle.text(entry.seconds, precise: true))].joined(separator: ";")
         }
-        return "\u{FEFF}" + L("Position;Bereich;Tätigkeit;Konkreter Umfang;Bearbeitungszeitraum;Aufwand (h)") + "\n" + rows.joined(separator: "\n")
+        let header = L("Position;Bereich;Tätigkeit;Konkreter Umfang;Bearbeitungszeitraum;Aufwand (h)").components(separatedBy: ";").dropLast().joined(separator: ";") + ";" + (formats.exportStyle == .clock ? L("Dauer (h:mm:ss)") : L("Stunden"))
+        return "\u{FEFF}" + header + "\n" + rows.joined(separator: "\n")
     }
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.10.1
+
+- Consistent configurable date and date-range display across old and new records, without rewriting stored originals.
+- Native Settings window for date order, optional 12/24-hour times, totals, and exported duration representation.
+- CSV/Excel import source-date and duration choices, validation, and format-aware export/PDF output.
+- Regression checks for ambiguous dates, unchanged records, persisted settings, and transfer round trips.
+
 ## 0.10.0
 
 - Lossless `.ticktack` project exports and an option to save all projects together.

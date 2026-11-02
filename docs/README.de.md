@@ -20,6 +20,10 @@ Wähle einen Namen und eine von sechs Akzentfarben. Jedes Projekt hat eigene Ein
 
 ![Neues Projekt mit frei gewähltem Namen und violetter Akzentfarbe](screenshots/new-project-dark.jpg)
 
+### Datum und Zeit nach deinem Geschmack
+
+Unter **TickTack → Einstellungen …** (⌘,) wählst du das Datumsformat, 12-/24-Stunden-Uhrzeiten und die Darstellung von Dauern. Erkannte alte und neue Daten erscheinen einheitlich; die Originalangaben bleiben gespeichert. CSV, Excel und PDF verwenden dieselbe Datumswahl. Beim Import lässt sich das Quellformat ausdrücklich festlegen.
+
 ### Gut lesbar und ganz lokal
 
 Die Grundschrift startet bei 17 Punkten. Im Menü **Darstellung** kannst du sie zwischen 16 und 24 Punkten anpassen. Höhere Zeilen und beschriftete Knöpfe erleichtern die Bedienung. Ist die erste bevorzugte Systemsprache Deutsch, erscheint TickTack auf Deutsch; für jede andere Systemsprache wird Englisch verwendet. Eigene Texte werden nicht übersetzt.
@@ -32,8 +36,8 @@ Deine Daten bleiben auf deinem Mac. Es gibt keine Konten, Werbung oder Nutzungsa
 
 Voraussetzung: **macOS 14 (Sonoma) oder neuer**.
 
-- **[Apple Silicon — M1 und neuer](https://github.com/Aluhut/TickTack/releases/download/v0.10.0/TickTack-0.10.0-macOS-arm64.zip)**
-- **[Intel-Macs](https://github.com/Aluhut/TickTack/releases/download/v0.10.0/TickTack-0.10.0-macOS-x86_64.zip)**
+- **[Apple Silicon — M1 und neuer](https://github.com/Aluhut/TickTack/releases/download/v0.10.1/TickTack-0.10.1-macOS-arm64.zip)**
+- **[Intel-Macs](https://github.com/Aluhut/TickTack/releases/download/v0.10.1/TickTack-0.10.1-macOS-x86_64.zip)**
 
 ZIP entpacken, **TickTack.app** nach **Programme** ziehen und dort öffnen. Die Downloads sind nicht von Apple notarisiert. Wird der erste Start blockiert, hilft die [Schritt-für-Schritt-Anleitung zu Gatekeeper](FIRST_LAUNCH.md#deutsch).
 

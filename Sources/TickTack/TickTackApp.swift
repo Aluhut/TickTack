@@ -67,10 +67,11 @@ import UniformTypeIdentifiers
                 }
             }
         }
+        Settings { FormatSettings(tracker: tracker).environment(\.locale, AppLanguage.locale) }
         MenuBarExtra {
             MenuView(tracker: tracker).environment(\.locale, AppLanguage.locale).font(.system(size: tracker.interfaceFontSize)).controlSize(.large)
         } label: {
-            Label(tracker.running ? duration(tracker.elapsed) : L("Zeit"), systemImage: tracker.paused ? "pause.circle" : tracker.running ? "record.circle" : "clock")
+            Label(tracker.running ? tracker.formats.total(tracker.elapsed) : L("Zeit"), systemImage: tracker.paused ? "pause.circle" : tracker.running ? "record.circle" : "clock")
         }.menuBarExtraStyle(.window)
     }
 }

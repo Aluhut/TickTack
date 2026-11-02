@@ -41,7 +41,7 @@ You can also open a `.ticktack` file from Finder. This opens the import preview,
 1. Choose a UTF-8 CSV/TSV file (UTF-16 files with a byte-order mark are also accepted).
 2. Check the delimiter and whether the first row contains headers. Semicolon, comma, and tab are supported.
 3. Assign source columns to TickTack's fields. Task and hours are required. Recognized German and English headers are suggested automatically.
-4. Choose the decimal separator. Hours must be nonnegative decimal numbers without thousands separators, such as `1.5` or `1,5`. Clock durations such as `01:30` are not accepted as hours.
+4. Choose the decimal separator. Hours must be nonnegative decimal numbers without thousands separators, such as `1.5` or `1,5`. Choose duration format for `01:30:00`; `01:30` alone is not accepted.
 5. Review the rows, valid total, and any errors. The preview shows up to 500 rows; its counts and total cover the whole table. Invalid rows block import unless you explicitly choose to skip them. Blank rows are ignored.
 6. Choose an existing destination project or create a new one with a name and color, then press Import.
 
@@ -49,7 +49,7 @@ Imports append entries; they never replace existing entries. Importing the same 
 
 ### CSV export
 
-The six columns are position, category, task, description, date range, and hours. Files use UTF-8 with a BOM, semicolon separators, and quoted fields. Header names and decimal separators follow the app language. Decimal hours use ten fractional digits to retain measured seconds. Quotes, newlines, and semicolons in notes are escaped. CSV has no row formatting; use Excel or PDF for alternating row colors. CSV contains user-entered text as written; choose Excel export when you need spreadsheet text cells explicitly typed as text.
+The six columns are position, category, task, description, date range, and hours. Files use UTF-8 with a BOM, semicolon separators, and quoted fields. Header names and decimal separators follow the app language; dates and duration representation follow Settings. Decimal hours use ten fractional digits to retain measured seconds. Quotes, newlines, and semicolons in notes are escaped. CSV has no row formatting; use Excel or PDF for alternating row colors. CSV contains user-entered text as written; choose Excel export when you need spreadsheet text cells explicitly typed as text.
 
 ### Excel (.xlsx)
 
@@ -62,6 +62,14 @@ Excel import lets you choose a worksheet and map its columns using the same prev
 PDF export produces an A4 landscape report with the project name, saved total, six entry columns, alternating row colors, and page numbers. Headers repeat on each page; long notes continue onto subsequent pages. PDF is an output format for sharing and printing, not for importing or restoring projects.
 
 Import files are limited to 30 MB; decompressed Excel content is also bounded. An unsupported or damaged file leaves existing data untouched. Use TickTack project files for lossless project transfers; CSV, Excel, and PDF are reports rather than full application backups.
+
+## Date, time and duration settings
+
+Open **TickTack → Settings…** (⌘,). Choose German dotted dates (`31.12.2026`), ISO dates (`2026-12-31`), day-first slashes (`31/12/2026`) or month-first slashes (`12/31/2026`). Recognized dates and date ranges use that format immediately in the table, inspector, CSV, Excel and PDF. Legacy short ranges such as `13.–19.10.2026` display both complete dates. Original stored text is retained; free-text descriptions are never reformatted.
+
+An optional switch displays times where the entry actually contains a time, using 24-hour or AM/PM notation. New timer entries retain their recording time. Old date-only records do not acquire invented times. Totals can use `HH:MM:SS` or decimal hours; a separate option chooses decimal hours or durations for CSV/Excel/PDF entry columns. Editable hours in the main table remain decimal hours.
+
+When importing a table, choose its source date order explicitly for slash dates. ISO and German dotted dates are recognized independently. The preview shows the resulting display and reports invalid numeric dates. Choose decimal hours or `HH:MM:SS` durations; a colon in the mapped duration column suggests the latter. Duration strings may exceed 24 hours and preserve fractions of seconds in CSV/Excel. Native TickTack files retain original values and source-date metadata independently of display preferences.
 
 ## Reading and language
 

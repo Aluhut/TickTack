@@ -10,6 +10,7 @@ Open `Package.swift` in Xcode for editing. `swift run` launches the executable w
 
 ## Source layout
 
+- `DateFormats.swift`: explicit date orders, non-destructive period display, clock/duration preferences and the Settings window. Settings use the injected preference store; records may retain a `periodDateOrder` hint for ambiguous manually entered slash dates.
 - `Models.swift`: Codable entry/project data, sort choices, date parsing.
 - `Tracker.swift`: timer, project storage, search-independent ordering, CSV, and restorable deletion.
 - `Transfer.swift`: versioned project documents, CSV/TSV parsing, mapping and validation.
