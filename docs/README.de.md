@@ -36,8 +36,10 @@ Deine Daten bleiben auf deinem Mac. Es gibt keine Konten, Werbung oder Nutzungsa
 
 Voraussetzung: **macOS 14 (Sonoma) oder neuer**.
 
-- **[Apple Silicon — M1 und neuer](https://github.com/Aluhut/TickTack/releases/download/v0.10.1/TickTack-0.10.1-macOS-arm64.zip)**
-- **[Intel-Macs](https://github.com/Aluhut/TickTack/releases/download/v0.10.1/TickTack-0.10.1-macOS-x86_64.zip)**
+Die fertigen Downloads sind noch Version **0.10.0**. Die neuen Datums- und Zeiteinstellungen aus **0.10.1** sind derzeit beim Selbstbauen aus dem Quellcode verfügbar.
+
+- **[Apple Silicon — M1 und neuer](https://github.com/Aluhut/TickTack/releases/download/v0.10.0/TickTack-0.10.0-macOS-arm64.zip)**
+- **[Intel-Macs](https://github.com/Aluhut/TickTack/releases/download/v0.10.0/TickTack-0.10.0-macOS-x86_64.zip)**
 
 ZIP entpacken, **TickTack.app** nach **Programme** ziehen und dort öffnen. Die Downloads sind nicht von Apple notarisiert. Wird der erste Start blockiert, hilft die [Schritt-für-Schritt-Anleitung zu Gatekeeper](FIRST_LAUNCH.md#deutsch).
 

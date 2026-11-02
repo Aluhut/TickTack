@@ -49,8 +49,10 @@ Choose a name and an accent color. Each project has its own entries, total, and 
 
 Requires **macOS 14 (Sonoma) or later**.
 
-- **[Download for Apple silicon — M1 and later](https://github.com/Aluhut/TickTack/releases/download/v0.10.1/TickTack-0.10.1-macOS-arm64.zip)**
-- **[Download for Intel Macs](https://github.com/Aluhut/TickTack/releases/download/v0.10.1/TickTack-0.10.1-macOS-x86_64.zip)**
+The prebuilt downloads below are version **0.10.0**. The configurable date/time settings in **0.10.1** are currently available when building from source.
+
+- **[Download for Apple silicon — M1 and later](https://github.com/Aluhut/TickTack/releases/download/v0.10.0/TickTack-0.10.0-macOS-arm64.zip)**
+- **[Download for Intel Macs](https://github.com/Aluhut/TickTack/releases/download/v0.10.0/TickTack-0.10.0-macOS-x86_64.zip)**
 
 Extract the ZIP, drag **TickTack.app** to **Applications**, and open it from there. Checksums are available on the [release page](https://github.com/Aluhut/TickTack/releases/latest).
 
